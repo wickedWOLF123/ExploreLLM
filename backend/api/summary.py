@@ -23,6 +23,6 @@ Answer the original user query. When helpful, personalize the response.
 """
     res = openai.ChatCompletion.create(
         model="gpt-4o-mini",
-        messages=[{"role":"user","content":prompt}]
+        messages=[{"role": "user", "content": prompt}]
     )
     return {"summary": res.choices[0].message.content.strip()}

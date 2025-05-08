@@ -28,13 +28,13 @@ Output format
 (Make sure only output a valid JSON object
 that can be parsed with JS function JSON.parse).
 Do not include any '<newline>' or 'json'.
-{
+{{
   "sub_problems": A list of strings (max 8), each as a valid sub-query
-}
+}}
 """
     res = openai.ChatCompletion.create(
         model="gpt-4o-mini",
-        messages=[{"role":"user","content":prompt}]
+        messages=[{"role": "user", "content": prompt}]
     )
-    tasks = res.choices[0].message.content.strip().split('\n')
+    tasks = res.choices[0].message.content.strip().split("\n")
     return {"sub_problems": tasks}

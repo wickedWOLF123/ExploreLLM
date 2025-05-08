@@ -27,19 +27,19 @@ My Context: {req.user_context}
 When coming up with options, make sure they are diverse and representative of multiple demographics, cultures, and viewpoints.
 Output format (make sure only output a valid JSON object):
 Do not include any '<newline>' or 'json'.
-{
+{{
   "recommended": Your recommendation,
   "options": A list of options (at least 5) for me to choose from. Each option is a single string. Provide helpful details.
-}
+}}
 == End of Instruction ==
 User: {req.text}
 Output:
 """
     res = openai.ChatCompletion.create(
         model="gpt-4o-mini",
-        messages=[{"role":"user","content":prompt}]
+        messages=[{"role": "user", "content": prompt}]
     )
-    content = res.choices[0].message.content.strip().split('\n')
+    content = res.choices[0].message.content.strip().split("\n")
     recommended = content[0].strip().replace('"recommended":', '').strip().strip(',')
     opts = [line.strip('- ').strip() for line in content[1:]]
     return {"recommended": recommended, "options": opts}
