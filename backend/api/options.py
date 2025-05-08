@@ -1,14 +1,16 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 import os
-import openai
+import json
+from openai import OpenAI
+from typing import Optional
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 router = APIRouter()
 
 class Req(BaseModel):
     text: str
-    context: str
+    context: Optional[str] = ''
     user_context: str
     selected_options: list[str]
 
@@ -35,11 +37,10 @@ Do not include any '<newline>' or 'json'.
 User: {req.text}
 Output:
 """
-    res = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
+        response_format={"type": "json_object"},
         messages=[{"role": "user", "content": prompt}]
     )
-    content = res.choices[0].message.content.strip().split("\n")
-    recommended = content[0].strip().replace('"recommended":', '').strip().strip(',')
-    opts = [line.strip('- ').strip() for line in content[1:]]
-    return {"recommended": recommended, "options": opts}
+    data = json.loads(response.choices[0].message.content)
+    return data

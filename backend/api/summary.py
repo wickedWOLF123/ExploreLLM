@@ -1,9 +1,10 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 import os
-import openai
+import json
+from openai import OpenAI
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 router = APIRouter()
 
 class Req(BaseModel):
@@ -20,9 +21,15 @@ Here is some information helpful to know about the user to personalize response.
 Personalization: {req.selected_options}
 Context: {req.user_context}
 Answer the original user query. When helpful, personalize the response.
+Output format (make sure only output a valid JSON object):
+{{
+  "summary": Your detailed response to the user's query
+}}
 """
-    res = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
+        response_format={"type": "json_object"},
         messages=[{"role": "user", "content": prompt}]
     )
-    return {"summary": res.choices[0].message.content.strip()}
+    data = json.loads(response.choices[0].message.content)
+    return data

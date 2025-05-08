@@ -8,12 +8,13 @@
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
+      "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/[taskId]/page": [
+    "/task/[taskId]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/[taskId]/page.js"
+      "static/chunks/app/task/[taskId]/page.js"
     ]
   }
 }

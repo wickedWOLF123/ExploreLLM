@@ -1,9 +1,14 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import os
-import openai
+import json
+from openai import OpenAI
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise HTTPException(status_code=500, detail="OPENAI_API_KEY environment variable is not set")
+
+client = OpenAI(api_key=api_key)
 router = APIRouter()
 
 class Req(BaseModel):
@@ -32,9 +37,10 @@ Do not include any '<newline>' or 'json'.
   "sub_problems": A list of strings (max 8), each as a valid sub-query
 }}
 """
-    res = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
+        response_format={"type": "json_object"},
         messages=[{"role": "user", "content": prompt}]
     )
-    tasks = res.choices[0].message.content.strip().split("\n")
-    return {"sub_problems": tasks}
+    data = json.loads(response.choices[0].message.content)
+    return data
